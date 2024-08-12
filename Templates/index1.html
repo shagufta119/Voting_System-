@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Voting System</title>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/java.js') }}">
+
+    
+    <style>
+        #chat-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .chat-message {
+            background-color: #f0f0f0;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .user-message {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        #user-input {
+            width: 80%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+
+        #send-button {
+            width: 20%;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-top: 10px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+ 
+    <h1>Blockchain Voting System</h1>
+
+    <div id="message-container"></div>
+
+    <div id="candidates-list">
+        <h2>Candidates:</h2>
+        <ul id="candidates"></ul>
+    </div>
+
+    <div id="voting-form">
+        <h2>Vote:</h2>
+        <label for="voterId">Voter ID:</label>
+        <input type="text" id="voterId" required><br>
+
+        <label for="candidates">Select a candidate:</label>
+        <select id="candidates" required></select><br>
+
+        <button onclick="submitVote()">Submit Vote</button>
+    </div>
+
+    <div id="chat-container">
+        <h2>Chatbot Responses:</h2>
+        <div class="chat-message user-message" id="user-response">User: Hello!</div>
+    </div>
+
+    <input type="text" id="user-input" placeholder="Type your message...">
+    <button id="send-button" onclick="sendMessage()">Send</button>
+
+    <script>
+        fetch('/get_candidates')
+            .then(response => response.json())
+            .then(data => {
+                const candidatesSelect = document.getElementById('candidates');
+                data.candidates.forEach(candidate => {
+                    const option = document.createElement('option');
+                    option.value = candidate;
+                    option.textContent = candidate;
+                    candidatesSelect.appendChild(option);
+                });
+            });
+
+        fetch('/get_chatbot_responses')
+            .then(response => response.json())
+            .then(data => {
+                const chatContainer = document.getElementById('chat-container');
+
+                data.chatbot_responses.guidelines.forEach(response => {
+                    const responseDiv = document.createElement('div');
+                    responseDiv.classList.add('chat-message');
+                    responseDiv.textContent = response;
+                    chatContainer.appendChild(responseDiv);
+                });
+
+                data.chatbot_responses.another_chatbot.forEach(response => {
+                    const responseDiv = document.createElement('div');
+                    responseDiv.classList.add('chat-message');
+                    responseDiv.textContent = response;
+                    chatContainer.appendChild(responseDiv);
+                });
+            });
+
+        function submitVote() {
+            const voterId = document.getElementById('voterId').value;
+            const candidate = document.getElementById('candidates').value;
+            const messageContainer = document.getElementById('message-container');
+            const userResponse = document.getElementById('user-response');
+
+            fetch('/submit_vote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ voter_id: voterId, candidate: candidate }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageDiv = document.createElement('div');
+                messageDiv.textContent = data.message;
+
+                if (data.success) {
+                    messageDiv.classList.add('success-message');
+                } else {
+                    messageDiv.classList.add('error-message');
+                }
+
+                while (messageContainer.firstChild) {
+                    messageContainer.removeChild(messageContainer.firstChild);
+                }
+
+                messageContainer.appendChild(messageDiv);
+
+                const userResponseDiv = document.createElement('div');
+                userResponseDiv.classList.add('chat-message', 'user-message');
+                userResponseDiv.textContent = `User: Voted for ${candidate}`;
+                chatContainer.appendChild(userResponseDiv);
+            });
+        }
+
+        function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            const chatContainer = document.getElementById('chat-container');
+
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.classList.add('chat-message', 'user-message');
+            userMessageDiv.textContent = `User: ${userInput}`;
+            chatContainer.appendChild(userMessageDiv);
+
+            document.getElementById('user-input').value = '';
+
+            fetch('/send_user_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_input: userInput }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const chatbotResponseDiv = document.createElement('div');
+                chatbotResponseDiv.classList.add('chat-message');
+                chatbotResponseDiv.textContent = `Chatbot: ${data.chatbot_response}`;
+                chatContainer.appendChild(chatbotResponseDiv);
+            });
+        }
+
+    function sendMessage() {
+        const userInput = document.getElementById('user-input').value;
+        const chatContainer = document.getElementById('chat-container');
+
+        const userMessageDiv = document.createElement('div');
+        userMessageDiv.classList.add('chat-message', 'user-message');
+        userMessageDiv.textContent = `User: ${userInput}`;
+        chatContainer.appendChild(userMessageDiv);
+
+        document.getElementById('user-input').value = '';
+
+        fetch('/send_user_message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_input: userInput }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            const chatbotResponseDiv = document.createElement('div');
+            chatbotResponseDiv.classList.add('chat-message');
+            chatbotResponseDiv.textContent = `Chatbot: ${data.chatbot_response}`;
+            chatContainer.appendChild(chatbotResponseDiv);
+        });
+    }
+    </script>
+    
+</body>
+</html>

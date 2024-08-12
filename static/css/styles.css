@@ -1,0 +1,95 @@
+/* styles.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #789c5b7e;
+    margin: 0;
+    padding: 0;
+}
+
+#bar {
+    background-color: #343a40;
+    padding: 10px 0;
+    text-align: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+#bar a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 16px;
+}
+
+#bar a:hover {
+    border-bottom: 2px solid #fff;
+}
+
+h1, h2 {
+    text-align: center;
+    margin-top: 30px;
+}
+
+h1 {
+    align-items: center;
+    color: #343a40;
+}
+
+h2 {
+    text-align: center;
+    color: #007bff;
+}
+#message-container,
+#candidates-list,
+#voting-form {
+    text-align: center;
+}
+
+#voting-form {
+    text-align: center;
+    margin-top: 10px;
+    width: 50%; /* Set the width to 50% */
+    margin-left: 25%; /* Center the form with margin-left */
+    margin-right: 25%; /* Center the form with margin-right */
+}
+
+#voting-form label {
+    text-align: center;
+    display: block;
+    margin-bottom: 5px;
+    color: #007bff;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+button {
+    background-color: #28a745;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+.success-message {
+    color: #28a745;
+}
+
+.error-message {
+    color: #dc3545;
+}
